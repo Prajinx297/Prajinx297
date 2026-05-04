@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 90" width="800" height="90">
+  <style>
+    /* Main horizontal travel + flip */
+    .stickman {
+      animation: travel 8s linear infinite;
+    }
+    /* Arm swing */
+    .arm-l {
+      transform-origin: 0px -22px;
+      animation: swingA 0.4s ease-in-out infinite alternate;
+    }
+    .arm-r {
+      transform-origin: 0px -22px;
+      animation: swingB 0.4s ease-in-out infinite alternate;
+    }
+    /* Leg swing */
+    .leg-l {
+      transform-origin: 0px -5px;
+      animation: swingB 0.4s ease-in-out infinite alternate;
+    }
+    .leg-r {
+      transform-origin: 0px -5px;
+      animation: swingA 0.4s ease-in-out infinite alternate;
+    }
+
+    /* Travel from left→right, pause, flip, right→left, pause, unflip */
+    @keyframes travel {
+      0%   { transform: translate(24px, 62px) scaleX(1);  }
+      44%  { transform: translate(770px,62px) scaleX(1);  }
+      50%  { transform: translate(770px,62px) scaleX(-1); }
+      94%  { transform: translate(24px, 62px) scaleX(-1); }
+      100% { transform: translate(24px, 62px) scaleX(1);  }
+    }
+
+    @keyframes swingA {
+      from { transform: rotate(-30deg); }
+      to   { transform: rotate(30deg);  }
+    }
+    @keyframes swingB {
+      from { transform: rotate(30deg);  }
+      to   { transform: rotate(-30deg); }
+    }
+  </style>
+
+  <!-- Ground line -->
+  <line x1="0" y1="78" x2="800" y2="78" stroke="#30363d" stroke-width="1.5"/>
+
+  <!-- START label -->
+  <text x="4" y="88" font-family="monospace" font-size="10" fill="#8b949e">start</text>
+  <!-- END label -->
+  <text x="762" y="88" font-family="monospace" font-size="10" fill="#8b949e">end</text>
+
+  <!-- Stick figure (centered at origin; travel keyframe positions it) -->
+  <g class="stickman">
+    <!-- Head -->
+    <circle cx="0" cy="-41" r="10" fill="none" stroke="#58a6ff" stroke-width="2.5"/>
+    <!-- Body -->
+    <line x1="0" y1="-31" x2="0" y2="-5"
+          stroke="#58a6ff" stroke-width="2.5" stroke-linecap="round"/>
+    <!-- Left arm -->
+    <g class="arm-l">
+      <line x1="0" y1="-22" x2="-15" y2="-8"
+            stroke="#58a6ff" stroke-width="2.5" stroke-linecap="round"/>
+    </g>
+    <!-- Right arm -->
+    <g class="arm-r">
+      <line x1="0" y1="-22" x2="15" y2="-8"
+            stroke="#58a6ff" stroke-width="2.5" stroke-linecap="round"/>
+    </g>
+    <!-- Left leg -->
+    <g class="leg-l">
+      <line x1="0" y1="-5" x2="-13" y2="16"
+            stroke="#58a6ff" stroke-width="2.5" stroke-linecap="round"/>
+    </g>
+    <!-- Right leg -->
+    <g class="leg-r">
+      <line x1="0" y1="-5" x2="13" y2="16"
+            stroke="#58a6ff" stroke-width="2.5" stroke-linecap="round"/>
+    </g>
+  </g>
+</svg>
