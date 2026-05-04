@@ -49,6 +49,9 @@ Git • GitHub • VS Code
 <p align="center">
   <img src="https://github-readme-activity-graph.vercel.app/graph?username=prajinx297&theme=tokyo-night" />
 </p>
+<p align="center">
+  <img src="stick-figure.svg" alt="stick figure climbing start to end and back" width="800"/>
+</p>
 
 ---
 
