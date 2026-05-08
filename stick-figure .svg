@@ -1,0 +1,170 @@
+<svg width="800" viewBox="0 0 800 300" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>Stickman climbing a line graph like a mountain</title>
+<desc>An animated stickman walks along a line graph, leaning on slopes, climbing peaks, and sliding down valleys</desc>
+<defs>
+  <style>
+    .lbl { font-family: monospace; font-size: 10px; fill: #888; }
+    .mo  { font-family: monospace; font-size: 10px; fill: #555; }
+  </style>
+  <clipPath id="graphclip">
+    <rect x="50" y="20" width="720" height="230"/>
+  </clipPath>
+</defs>
+
+<rect width="800" height="300" fill="#0d1117" rx="10"/>
+
+<line x1="50" y1="50"  x2="770" y2="50"  stroke="#1c2128" stroke-width="0.8"/>
+<line x1="50" y1="90"  x2="770" y2="90"  stroke="#1c2128" stroke-width="0.8"/>
+<line x1="50" y1="130" x2="770" y2="130" stroke="#1c2128" stroke-width="0.8"/>
+<line x1="50" y1="170" x2="770" y2="170" stroke="#1c2128" stroke-width="0.8"/>
+<line x1="50" y1="210" x2="770" y2="210" stroke="#1c2128" stroke-width="0.8"/>
+
+<text class="lbl" x="44" y="53"  text-anchor="end">200</text>
+<text class="lbl" x="44" y="93"  text-anchor="end">150</text>
+<text class="lbl" x="44" y="133" text-anchor="end">100</text>
+<text class="lbl" x="44" y="173" text-anchor="end">50</text>
+<text class="lbl" x="44" y="213" text-anchor="end">0</text>
+
+<line x1="50" y1="210" x2="50"  y2="30"  stroke="#30363d" stroke-width="0.8"/>
+<line x1="50" y1="210" x2="770" y2="210" stroke="#30363d" stroke-width="1"/>
+
+<polyline id="areafill" fill="none" stroke="none"/>
+<polyline id="graphline" fill="none" stroke="#39d353" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+
+<text class="mo" x="80"  y="226" text-anchor="middle">Jan</text>
+<text class="mo" x="143" y="226" text-anchor="middle">Feb</text>
+<text class="mo" x="206" y="226" text-anchor="middle">Mar</text>
+<text class="mo" x="269" y="226" text-anchor="middle">Apr</text>
+<text class="mo" x="332" y="226" text-anchor="middle">May</text>
+<text class="mo" x="395" y="226" text-anchor="middle">Jun</text>
+<text class="mo" x="458" y="226" text-anchor="middle">Jul</text>
+<text class="mo" x="521" y="226" text-anchor="middle">Aug</text>
+<text class="mo" x="584" y="226" text-anchor="middle">Sep</text>
+<text class="mo" x="647" y="226" text-anchor="middle">Oct</text>
+<text class="mo" x="710" y="226" text-anchor="middle">Nov</text>
+<text class="mo" x="762" y="226" text-anchor="middle">Dec</text>
+
+<text font-family="monospace" font-size="11" fill="#39d353" opacity="0.6" x="770" y="290" text-anchor="end">contributions 2024</text>
+
+<g id="stickman">
+  <ellipse id="sm-shadow" cx="0" cy="2" rx="8" ry="2.5" fill="rgba(57,211,83,0.15)"/>
+  <circle id="sm-head" cx="0" cy="-26" r="6" fill="none" stroke="#39d353" stroke-width="1.8"/>
+  <circle cx="-2" cy="-28" r="1" fill="#39d353"/>
+  <circle cx="2"  cy="-28" r="1" fill="#39d353"/>
+  <line id="sm-body"  x1="0" y1="-20" x2="0"  y2="-7"  stroke="#39d353" stroke-width="1.8" stroke-linecap="round"/>
+  <line id="sm-arm-l" x1="0" y1="-16" x2="-7" y2="-10" stroke="#39d353" stroke-width="1.8" stroke-linecap="round"/>
+  <line id="sm-arm-r" x1="0" y1="-16" x2="7"  y2="-10" stroke="#39d353" stroke-width="1.8" stroke-linecap="round"/>
+  <line id="sm-leg-l" x1="0" y1="-7"  x2="-6" y2="5"   stroke="#39d353" stroke-width="1.8" stroke-linecap="round"/>
+  <line id="sm-leg-r" x1="0" y1="-7"  x2="6"  y2="5"   stroke="#39d353" stroke-width="1.8" stroke-linecap="round"/>
+</g>
+
+<script><![CDATA[
+const dataY = [160, 185, 140, 170, 90, 130, 195, 105, 155, 175, 120, 65];
+const months = 12;
+const X0 = 50, X1 = 770, Y0 = 210;
+const xs = dataY.map((_, i) => X0 + (i / (months - 1)) * (X1 - X0));
+const ys = dataY.map(v => Y0 - v);
+
+function catmullRom(t, p0, p1, p2, p3) {
+  const t2 = t*t, t3 = t2*t;
+  return 0.5*((2*p1)+(-p0+p2)*t+(2*p0-5*p1+4*p2-p3)*t2+(-p0+3*p1-3*p2+p3)*t3);
+}
+
+function buildCurve(steps) {
+  const pts = [];
+  const n = xs.length;
+  for (let i = 0; i < n-1; i++) {
+    const segs = Math.round(steps/(n-1));
+    for (let j = 0; j < segs; j++) {
+      const t = j/segs;
+      const i0=Math.max(0,i-1), i1=i, i2=i+1, i3=Math.min(n-1,i+2);
+      pts.push({
+        x: catmullRom(t, xs[i0],xs[i1],xs[i2],xs[i3]),
+        y: catmullRom(t, ys[i0],ys[i1],ys[i2],ys[i3])
+      });
+    }
+  }
+  pts.push({x:xs[n-1], y:ys[n-1]});
+  return pts;
+}
+
+const STEPS = 700;
+const curve = buildCurve(STEPS);
+
+document.getElementById('graphline').setAttribute('points', curve.map(p=>`${p.x},${p.y}`).join(' '));
+
+const area = curve.map(p=>`${p.x},${p.y}`).join(' ')+` ${curve[curve.length-1].x},${Y0} ${curve[0].x},${Y0}`;
+const af = document.getElementById('areafill');
+af.setAttribute('points', area);
+af.setAttribute('fill','rgba(57,211,83,0.06)');
+
+const man  = document.getElementById('stickman');
+const armL = document.getElementById('sm-arm-l');
+const armR = document.getElementById('sm-arm-r');
+const legL = document.getElementById('sm-leg-l');
+const legR = document.getElementById('sm-leg-r');
+const shad = document.getElementById('sm-shadow');
+
+let idx=0, phase=0, slideAnim=0, speed=1.2;
+
+function slope(i) {
+  const a=Math.max(0,i-4), b=Math.min(curve.length-1,i+4);
+  return (curve[b].y-curve[a].y)/(curve[b].x-curve[a].x);
+}
+
+function frame() {
+  phase += 0.18;
+  idx   += speed;
+  if (idx >= curve.length-1) idx=0;
+
+  const ci   = Math.floor(idx);
+  const px   = curve[ci].x;
+  const py   = curve[ci].y;
+  const sl   = slope(ci);
+  const ang  = Math.atan(sl)*180/Math.PI;
+  const abs  = Math.abs(sl);
+  const up   = sl < -0.3;
+  const down = sl >  0.4;
+  const steep= abs > 0.7;
+
+  if (steep && down) {
+    slideAnim++; speed=2.5;
+    armL.setAttribute('x2',-11+Math.sin(slideAnim*.28)*5);
+    armL.setAttribute('y2',-21+Math.cos(slideAnim*.28)*4);
+    armR.setAttribute('x2', 11+Math.sin(slideAnim*.28+1)*5);
+    armR.setAttribute('y2',-21+Math.cos(slideAnim*.28+1)*4);
+    legL.setAttribute('x2', -9+Math.sin(slideAnim*.38)*5);
+    legL.setAttribute('y2',  7+Math.cos(slideAnim*.38)*4);
+    legR.setAttribute('x2',  9+Math.sin(slideAnim*.38+2)*5);
+    legR.setAttribute('y2',  7+Math.cos(slideAnim*.38+2)*4);
+  } else if (up && abs>0.45) {
+    slideAnim++; speed=0.65;
+    armL.setAttribute('x2',-9+Math.sin(slideAnim*.2)*3);
+    armL.setAttribute('y2',-23+Math.cos(slideAnim*.2)*4);
+    armR.setAttribute('x2', 9+Math.sin(slideAnim*.2+1.6)*3);
+    armR.setAttribute('y2',-21+Math.cos(slideAnim*.2+1.6)*4);
+    legL.setAttribute('x2',-7+Math.cos(slideAnim*.2)*5);
+    legL.setAttribute('y2', 7+Math.sin(slideAnim*.2)*4);
+    legR.setAttribute('x2', 7+Math.cos(slideAnim*.2+1.2)*5);
+    legR.setAttribute('y2', 7+Math.sin(slideAnim*.2+1.2)*4);
+  } else {
+    slideAnim=0; speed=1.2;
+    armL.setAttribute('x2',-7+Math.sin(phase)*5);
+    armL.setAttribute('y2',-10+Math.cos(phase)*2);
+    armR.setAttribute('x2', 7+Math.sin(phase+Math.PI)*5);
+    armR.setAttribute('y2',-10+Math.cos(phase+Math.PI)*2);
+    legL.setAttribute('x2',-6+Math.sin(phase+Math.PI)*6);
+    legL.setAttribute('y2', 6+Math.abs(Math.cos(phase))*2);
+    legR.setAttribute('x2', 6+Math.sin(phase)*6);
+    legR.setAttribute('y2', 6+Math.abs(Math.cos(phase+Math.PI))*2);
+  }
+
+  const bob = Math.abs(Math.sin(phase))*1.5;
+  man.setAttribute('transform',`translate(${px},${py-bob}) rotate(${ang*.75})`);
+  shad.setAttribute('cy', bob+2);
+  requestAnimationFrame(frame);
+}
+
+frame();
+]]></script>
+</svg>
